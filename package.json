@@ -44,5 +44,18 @@
     "roots": [
       "../test"
     ]
-  }
+  },
+  "main": ".eslintrc.js",
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anjalirathor622/molecuter-project.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/anjalirathor622/molecuter-project/issues"
+  },
+  "homepage": "https://github.com/anjalirathor622/molecuter-project#readme"
 }

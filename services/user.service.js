@@ -1,6 +1,8 @@
 const DbMixin = require("../mixins/db.mixin");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const env = require("dotenv");
+env.config();
 //named import
 module.exports={
 
@@ -12,7 +14,7 @@ module.exports={
 	mixins: [DbMixin("user")],
 
     settings: {
-        JWT_SECRET: process.env.JWT_SECRET,
+        SECRET_KEY: process.env.JWT_SECRET,
         fields: [
             
 			"username",
@@ -90,19 +92,45 @@ module.exports={
                         //.then(json => this.entityChanged("created", json, ctx).then(() => json));
 			    })
 		    }
+        },
+        //user login 
+        login:{
+            rest: {
+                method: "POST",
+                path: "/login"
+            },
+            async handler(ctx){
+                const { email, password } = ctx.params;
+
+                
+
+                return this.promise.resolve()
+                .then(()=>this.adapter.findOne({email}))
+                .then((user)=>{
+                        if (!user){
+                            return this.promise.reject('invalid user')
+                        }else{
+                            return bcrypt.compareSync(password, user.password)
+
+                            .then(comprpass=>{
+                                if(!comprpass){
+                                    return this.Promise.reject('unregistered user')
+                                   
+                                   
+                                }else{
+                                    var token =jwt.sign(user, process.env.SECRET_KEY);
+    
+                                    return {
+                                        msg:"user login succesfully",
+                                        token}
+                                    }
+                            })
+                        }
+                    })
+            }
         }
     },
-    //user login 
-    login:{
-        rest: {
-            method: "POST",
-            path: "/login"
-        },
-        async handler(){
-            return console.log("login service started")
-           
-                }
-    },
+    
 
     events: {},
 
@@ -115,17 +143,19 @@ module.exports={
 		
         async seedDB(){
         await this.adapter.insertMany([
-            {username:"anjali rathor", 
-            email:"anjalirathor123@gmail.com",
-            password:"anjali123",
-            role:"admin",
-            bio:"developer"
+            {
+                username:"anjali rathor", 
+                email:"anjalirathor123@gmail.com",
+                password:"anjali123",
+                role:"admin",
+                bio:"developer"
             },
-            {username:"kiran rathor", 
-            email:"kiranrathor123@gmail.com",
-            password:"kiran123",
-            role:"superadmin",
-            bio:"developer2"
+            {
+                username:"kiran rathor", 
+                email:"kiranrathor123@gmail.com",
+                password:"kiran123",
+                role:"superadmin",
+                bio:"developer2"
             },
            
         ]);
